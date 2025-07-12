@@ -8,6 +8,7 @@ import Login from "./../screens/auth/Login";
 import NotFound from "./../screens/NotFound";
 
 import LelangSaya from "./../screens/LelangSaya.vue";
+import ListLelang from "../screens/ListLelang.vue";
 
 Vue.use(VueRouter);
 
@@ -30,6 +31,11 @@ const routes = [
         path: "/lelang-saya",
         name: "LelangSaya",
         component: LelangSaya,
+    },
+    {
+        path: "/list-lelang",
+        name: "ListLelang",
+        component: ListLelang,
     },
     {
         path: "/login",

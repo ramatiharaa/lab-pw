@@ -8,21 +8,27 @@ use \App\Events\ItemEvent;
 use Illuminate\Http\Request;
 use \App\Events\AutoBidEvent;
 use \App\Events\ItemWithBidsEvent;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class ItemController extends Controller {
+class ItemController extends Controller
+{
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index()
+    {
         $items = Item::get();
         return $items;
     }
 
-    public function updateLelang(Request $request, $id) {
+    public function updateLelang(Request $request, $id)
+    {
         $item = Item::findOrFail($id);
 
         $item->name = $request->input('name');
@@ -45,7 +51,8 @@ class ItemController extends Controller {
         return response()->json(['message' => 'Item updated successfully', 'item' => $item]);
     }
 
-    public function indexByUserId() {
+    public function indexByUserId()
+    {
         $userId = auth()->id();
 
         $lelangs = Item::where('create_by_user_id', $userId)->get();
@@ -54,7 +61,8 @@ class ItemController extends Controller {
     }
 
     // Tambah lelang baru
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:191',
             'details' => 'required|string',
@@ -83,10 +91,11 @@ class ItemController extends Controller {
         return response()->json(['message' => 'Lelang berhasil dibuat', 'data' => $lelang], 201);
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
         $lelang = Item::where('id', $id)
-                        ->where('create_by_user_id', auth()->id())
-                        ->first();
+            ->where('create_by_user_id', auth()->id())
+            ->first();
 
         if (!$lelang) {
             return response()->json(['message' => 'Lelang tidak ditemukan atau bukan milik Anda'], 404);
@@ -103,7 +112,8 @@ class ItemController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Item $item) {
+    public function show(Item $item)
+    {
 
         return $item;
     }
@@ -115,7 +125,8 @@ class ItemController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Item $item) {
+    public function update(Request $request, Item $item)
+    {
         // return;
 
         $request->validate(
@@ -123,7 +134,6 @@ class ItemController extends Controller {
                 'max_bid' => 'required|integer|min:' . (int) ($request->comeFromAutoBid ? $item->max_bid : $item->max_bid + 1) . '|max:999999999',
             ]
         );
-
 
         if ($item->available_untill && now() < $item->available_untill) {
 
@@ -166,6 +176,12 @@ class ItemController extends Controller {
                 } else {
                     $this->handle($item, $request->max_bid, Auth::id(), $length, $autoBids);
                 }
+
+                DB::table('user_item')->insertOrIgnore([
+                    'user_id' => Auth::id(),
+                    'item_id' => $item->id,
+                ]);
+
 
                 $item->save();
 

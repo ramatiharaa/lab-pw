@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/items', [ItemController::class, 'store']);
     Route::delete('/items/{id}', [ItemController::class, 'destroy']);
     Route::put('/itemsupdate/{id}', [ItemController::class, 'updateLelang']);
-
+    Route::get('/user/{id}/items', [ItemUserController::class, 'getItemsByUser']);
+    Route::get('/item/{id}/users', [ItemUserController::class, 'getUsersByItem']);
+    Route::get('/my-items', [ItemUserController::class, 'getMyItems'])->middleware('auth');
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

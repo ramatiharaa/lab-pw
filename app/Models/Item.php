@@ -22,4 +22,9 @@ class Item extends Model
     {
         return $this->hasMany('App\Models\AutoBid');
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_item', 'item_id', 'user_id');
+    }
 }

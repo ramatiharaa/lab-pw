@@ -21,6 +21,14 @@
             </router-link>
 
             <div v-if="isLoggedIn" class="flex items-center relative" v-click-outside="closeMenu">
+              <!-- List Lelang -->
+              <router-link
+                to="/list-lelang"
+                class="mr-4 text-gray-800 hover:underline"
+              >
+                List Lelang
+              </router-link>
+
               <!-- Lelang Saya -->
               <router-link
                 to="/lelang-saya"
